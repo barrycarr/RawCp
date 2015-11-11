@@ -13,6 +13,9 @@ let load filename =
      JsonConvert.DeserializeObject<Config.Config>(File.ReadAllText(filename))
 
 let filelist dir =
+    let dirInfo = DirectoryInfo(dir)
+    let files = dirInfo.GetFiles("*.*") |> Array.sortBy (fun fi -> fi.CreationTime);
+    
     Directory.GetFiles(dir)
 
 let copyFiles files dest =
@@ -41,7 +44,5 @@ let main argv =
     let files = filelist config.SourceFolder
     let results = copyFiles files config.DestinationFolder
     results.Wait()
-
-    //Console.ReadLine() |> ignore
 
     0 // return an integer exit code
