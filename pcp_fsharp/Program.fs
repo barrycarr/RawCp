@@ -27,8 +27,9 @@ let copyFiles files dest =
         Async.AwaitIAsyncResult(t) |> Async.Ignore
 
     let copyFile dest f =
+        let di = Directory.CreateDirectory(dest)
         async {
-            let d = Path.Combine(dest, Path.GetFileName(f))
+            let d = Path.Combine(di.FullName, Path.GetFileName(f))
             use reader = File.Open(f, FileMode.Open)
             use writer = File.Create(d)
             
@@ -40,14 +41,27 @@ let copyFiles files dest =
             
     Task.WhenAll(files |> Seq.map (copyFile dest)) 
     
-
+let destinationFolder destFolder (date: DateTime) desc camera =
+    let subject = sprintf "%s %s" (date.ToString("yyyyMMdd")) desc 
+    Path.Combine(
+        destFolder, 
+        date.ToString("yyyy"), 
+        date.ToString("MM MMMM"), 
+        subject, 
+        camera)
+    
 [<EntryPoint>]
 let main argv =
+    let desc = "A Description"
+    let camera = "Fuji X100S"
+
     printfn "%A" argv
     let config = load "./pcp-config.json"
     let files = fileGroups config.SourceFolder
-    let filenames = (files |> Seq.head).files |> Seq.map (fun fi -> fi.FullName)
-    let results = copyFiles filenames config.DestinationFolder
+    let first = (files |> Seq.head)
+    let filenames = first.files |> Seq.map (fun fi -> fi.FullName)
+    let destFolder = destinationFolder config.DestinationFolder first.date desc camera
+    let results = copyFiles filenames destFolder
     results.Wait()
 
     0 // return an integer exit code
