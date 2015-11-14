@@ -9,14 +9,18 @@ open System
 open System.IO
 open System.Threading.Tasks
 
+type filegrp = {date: DateTime; files: seq<FileInfo>}
+
 let load filename =
      JsonConvert.DeserializeObject<Config.Config>(File.ReadAllText(filename))
 
-let filelist dir =
+let fileGroups dir =
     let dirInfo = DirectoryInfo(dir)
-    let files = dirInfo.GetFiles("*.*") |> Array.sortBy (fun fi -> fi.CreationTime);
-    
-    Directory.GetFiles(dir)
+    dirInfo.GetFiles("*.*") 
+        |> Array.sortBy (fun fi -> fi.LastWriteTime.Date)
+        |> Seq.groupBy (fun fi -> fi.LastWriteTime.Date)
+        |> Seq.map(fun (dt, infos) -> {date = dt.Date; files = infos})
+
 
 let copyFiles files dest =
     let asyncAwaitVoidTask (t: Task) =
@@ -34,15 +38,16 @@ let copyFiles files dest =
             do! writer.FlushAsync() |> asyncAwaitVoidTask
         } |> Async.StartAsTask
             
-    Task.WhenAll(files |> Array.map (copyFile dest)) 
+    Task.WhenAll(files |> Seq.map (copyFile dest)) 
     
 
 [<EntryPoint>]
 let main argv =
     printfn "%A" argv
     let config = load "./pcp-config.json"
-    let files = filelist config.SourceFolder
-    let results = copyFiles files config.DestinationFolder
+    let files = fileGroups config.SourceFolder
+    let filenames = (files |> Seq.head).files |> Seq.map (fun fi -> fi.FullName)
+    let results = copyFiles filenames config.DestinationFolder
     results.Wait()
 
     0 // return an integer exit code
