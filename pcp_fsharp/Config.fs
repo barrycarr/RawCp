@@ -1,4 +1,4 @@
-﻿namespace Config
+﻿namespace raw_cp.Config
 
 open System.Collections.Generic
 

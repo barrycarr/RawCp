@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "pcp_fsharp", "pcp_fsharp\pcp_fsharp.fsproj", "{3136DB8E-DDA6-4578-A82B-E0FD5508F54C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "raw_cp", "pcp_fsharp\raw_cp.fsproj", "{3136DB8E-DDA6-4578-A82B-E0FD5508F54C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

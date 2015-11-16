@@ -4,22 +4,23 @@
 // http://www.codeproject.com/Articles/773451/Fsharp-Asynchronous-Workflows
 
 open Newtonsoft.Json
-open Config
+open raw_cp.Config
+open raw_cp.CommandLine
 open System
 open System.IO
 open System.Threading.Tasks
 
-type filegrp = {date: DateTime; files: seq<FileInfo>}
+type FileGrp = {Date: DateTime; Files: seq<FileInfo>}
 
 let load filename =
-     JsonConvert.DeserializeObject<Config.Config>(File.ReadAllText(filename))
+     JsonConvert.DeserializeObject<raw_cp.Config.Config>(File.ReadAllText(filename))
 
 let fileGroups dir =
     let dirInfo = DirectoryInfo(dir)
     dirInfo.GetFiles("*.*") 
         |> Array.sortBy (fun fi -> fi.LastWriteTime.Date)
         |> Seq.groupBy (fun fi -> fi.LastWriteTime.Date)
-        |> Seq.map(fun (dt, infos) -> {date = dt.Date; files = infos})
+        |> Seq.map(fun (dt, infos) -> {Date = dt.Date; Files = infos})
 
 
 let copyFiles files dest =
@@ -52,15 +53,13 @@ let destinationFolder destFolder (date: DateTime) desc camera =
     
 [<EntryPoint>]
 let main argv =
-    let desc = "A Description"
-    let camera = "Fuji X100S"
+    let opts = argv |> raw_cp.CommandLine.parseCommandLine
 
-    printfn "%A" argv
-    let config = load "./pcp-config.json"
+    let config = load "./raw-cp-config.json"
     let files = fileGroups config.SourceFolder
     let first = (files |> Seq.head)
-    let filenames = first.files |> Seq.map (fun fi -> fi.FullName)
-    let destFolder = destinationFolder config.DestinationFolder first.date desc camera
+    let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
+    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras.[opts.Camera]
     let results = copyFiles filenames destFolder
     results.Wait()
 
