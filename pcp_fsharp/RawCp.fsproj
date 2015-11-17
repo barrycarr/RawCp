@@ -64,6 +64,7 @@
     <None Include="rawcp-config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
