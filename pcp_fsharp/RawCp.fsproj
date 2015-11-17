@@ -8,11 +8,11 @@
     <ProjectGuid>3136db8e-dda6-4578-a82b-e0fd5508f54c</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>pcp_fsharp</RootNamespace>
-    <AssemblyName>raw_cp</AssemblyName>
+    <AssemblyName>RawCp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
-    <Name>raw_cp</Name>
+    <Name>RawCp</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,7 +61,7 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
-    <None Include="raw-cp-config.json">
+    <None Include="rawcp-config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

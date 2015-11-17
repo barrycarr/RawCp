@@ -1,7 +1,8 @@
-﻿namespace raw_cp
+﻿namespace RawCp
 
 // http://fsharpforfunandprofit.com/posts/pattern-matching-command-line/
 module CommandLine =
+    open RawCp.Config
 
     type CommandLineOptions = {
         Description: string;
@@ -9,7 +10,7 @@ module CommandLine =
         Move: bool
     }
 
-    let parseCommandLine args =
+    let parseCommandLine args (config: Config) =
         let rec parseCommandLineRec args optionsSoFar =
             match args with
             | [] -> optionsSoFar
@@ -28,8 +29,8 @@ module CommandLine =
 
         let defaultOpts = {
             Description = "";
-            Camera = "";
-            Move = false
+            Camera = config.DefaultCamera;
+            Move = config.AlwaysMove
         }
         
         parseCommandLineRec (args |> Array.toList) defaultOpts 
