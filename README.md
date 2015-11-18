@@ -74,19 +74,19 @@ This command will:
  ```
  c:\Users\Username\Pictures\2015\08 August\20151105 Day Trip to Dundee\Fuji x100s
  ```
- #### How destination paths are generated
- Here is the destination path from the first part of the example. This time, I've numbered each part of the path.
+#### How destination paths are generated
+Here is the destination path from the first part of the example. This time, I've numbered each part of the path.
  ```
 c:\Users\Username\Pictures\2015\08 August\20151105 Day Trip to Dundee\Sony A7
 |           1             | 2  |    3    |            4              |   5  |
   ```
 1. Is determined by the value specified by the `destinationFolder` value in the config file.
-2. Is the year taken from the RAW files Date
-3. Is the months number and months name taken from the RAW files Date. Month number and dates are used so that all the months appear in the correct order in that year's folder. All months numbers are two digits long, leading zeros are used for the months before October.
+2. Is the year taken from the RAW files date
+3. Is the months number and months name taken from the RAW files date. Month number and dates are used so that all the months appear in the correct order in that year's folder. All months numbers are two digits long, leading zeros are used for the months before October.
 4. Is the RAW file's date in ISO format (YYYYMMDD) followed by the text you gave the `/d` switch. As with month numbers above, ISO dates are used to ensure that directories appear in the order in which the photos were taken.
-5. This value associated with key provided with `/c` switch. In our example, the `a7` key maps to the value `Sony A7` in the config file. If the `/c` isn't supplied, the value that maps key specified by the `defaultCamera` property of the config file is used.
+5. This is the value associated with key provided with `/c` switch. In our example, the `a7` key maps to the value `Sony A7` in the config file. If the `/c` isn't supplied, the value that maps key specified by the `defaultCamera` property of the config file is used.
 
 ### Other Points
-If `RawCp` finds that there are RAW files that have different dates in `sourceFolder` the it will only copy the earliest dated files. If you've elected to move the files, you can keep using `RawCp` until the `sourceFolder` is empty and supply a different description (`/d` switch) each time.
+If `RawCp` finds that there are RAW files that have different dates in `sourceFolder` then it will only copy the earliest dated files. If you've elected to move the files, you can keep using `RawCp` until the `sourceFolder` is empty and supply a different description (`/d` switch) each time.
 
 It should be possible to place a copy of your config file in the root folder of each memory card. This config file can then be edited to contain the default values for that particular card/camera combination. Then, before you run `RawCp`, `cd` into the card's root directory and `RawCp` should pick up the config file located there and all you will need to do is provide `RawCp` a description via the `/d` switch.
