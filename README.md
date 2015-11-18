@@ -20,7 +20,7 @@ Property     | Type | Purpose | Example
 `"alwaysMove"` | `Boolean` | Tells RawCp to always move files rather than copy them. It's the equivalent of invoking `RawCp` with the `/m` switch. | `"alwaysMove": true`
 `"cameras"` | `Object` (More specifically, a `Dictionary<string, string>`) | An object that consists of key-value pairs. Each key-value pair is defined thus `"key": "value"`. Providing `RawCp` with a key on the command line, via `/c` switch, provides you with a means of giving RawCp an alias for a cameras full description. | `"cameras": {"a7": "Sony A7", "nex5": "Sony NEX-5N","nex6": "Sony NEX-6","x100s": "Fuji x100s"}`
 `"defaultCamera"`|`String`| A string that matches one of the keys defined in `"camera"` property. Used as the default value when you don't use the `/c cameraKey` on the command line. | `"defaultCamera": "x100s"` 
-`"destinationFolder"`|`String`| The location (path) where you'd like your RAW files copied to. Please note that backslashes in the path have to be doubled up. | "destinationFolder": "c:\\Users\\Username\\Pictures"
+`"destinationFolder"`|`String`| The location (path) where you'd like your RAW files copied to. Please note that backslashes in the path have to be doubled up. | `"destinationFolder": "c:\\Users\\Username\\Pictures"`
 `"sourceFolder"` | String | The location (path) where your raw files are located. Please note that backslashes in the path have to be doubled up. | `"sourceFolder": "z:\\DCIM"`
 
 #### An Example Config File
