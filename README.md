@@ -4,6 +4,8 @@ RawCp is a command line utility that will copy (or move) RAW files from you came
 Your RAW files are copied (or moved) to a location under your specified destination folder based on the date of the raw file,
 a description that you supply on the comand line and the camera name that you also supply at the command line. A default source location and the default root destination folder can be specified the utilities config file (`rawcp-config.json`).
 
+*Please note: This is beta quality software and a work in progress, as such, it is provided as-is. You should use this sofware with caution and back-up any important data before you this utility to copy or move any of data/images files.*
+  
 ###Config File
 RawCp's config file is a JSON file that allows you to specify some default values that RawCp uses each time it is run. RawCp will look for a config file in one of three locations and expects the config file to be called `rawcp-config.json`
 

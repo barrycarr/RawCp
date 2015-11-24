@@ -1,12 +1,12 @@
 {
-    "alwaysMove": true,
+    "alwaysMove": false,
     "cameras": {
         "a7": "Sony A7",
         "nex5": "Sony NEX-5N",
         "nex6": "Sony NEX-6",
         "x100s": "Fuji x100s"
     },
-    "defaultCamera": "x100s",
+    "defaultCamera": "nex6",
     "destinationFolder": "c:\\test\\dest",
-    "sourceFolder": "c:\\test\\src"
+    "sourceFolder": "F:\\DCIM\\100MSDCF"
 }

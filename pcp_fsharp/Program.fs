@@ -51,7 +51,7 @@ let destinationFolder destFolder (date: DateTime) desc camera =
         destFolder, 
         date.ToString("yyyy"), 
         date.ToString("MM MMMM"), 
-        subject, 
+        subject.TrimEnd(), 
         camera)
 
 
