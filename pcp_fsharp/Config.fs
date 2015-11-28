@@ -14,6 +14,7 @@ module Helpers =
     open System.IO
     open System
     open Newtonsoft.Json
+    open RawCp.Either
 
     let load fn =
         let locations = [
@@ -31,5 +32,5 @@ module Helpers =
                 else loadRec (locs |> List.tail) fn
 
         match loadRec locations fn with
-        | Some(fn) -> JsonConvert.DeserializeObject<Config>(File.ReadAllText(fn))
-        | None -> failwith "Config file not found! Searched the current directory; RawCp's directory and your home directory!"
+        | Some(fn) -> success (JsonConvert.DeserializeObject<Config>(File.ReadAllText(fn)))
+        | None -> failure "Config file not found! Searched the current directory; RawCp's directory and your home directory!"

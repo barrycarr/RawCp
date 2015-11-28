@@ -61,14 +61,26 @@ let deleteSourceFiles move files =
         for f in files do
             File.Delete(f)
 
-    
+let findFiles (config: Result<Config>) =
+    let getFilenames files =
+        let first = (files |> Seq.head)
+        first.Files |> Seq.map (fun fi -> fi.FullName)
+
+    match config with
+    | Failure s -> failure s
+    | Success c -> 
+        let files = fileGroups c.SourceFolder
+        if  files |> Seq.isEmpty then
+            failure (sprintf "No files found in %s" c.SourceFolder)
+        else
+            success (getFilenames files)
+           
+                    
 [<EntryPoint>]
 let main argv =
     let config = Helpers.load "rawcp-config.json"
     let opts = RawCp.CommandLine.parseCommandLine argv config
-    let files = fileGroups config.SourceFolder
-    let first = (files |> Seq.head)
-    let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
+    let filenames = findFiles config
     let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras.[opts.Camera]
 
     printLegend opts config destFolder
