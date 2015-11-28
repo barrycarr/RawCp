@@ -1,5 +1,6 @@
 ﻿open RawCp.Config
 open RawCp.CommandLine
+open RawCp.Either
 open System
 open System.IO
 open System.Threading.Tasks
