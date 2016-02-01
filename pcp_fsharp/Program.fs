@@ -7,6 +7,12 @@ open System.Threading.Tasks
 
 type FileGrp = {Date: DateTime; Files: seq<FileInfo>}
 
+type Params = {
+    Config: Config; 
+    Opts: CommandLineOptions;
+    Filenames: seq<String>;
+}
+
 let printLegend opts (conf: Config)  dest =
     let mthd = if opts.Move
                   then "MOVING" 
@@ -75,9 +81,32 @@ let findFiles (config: Result<Config>) =
         else
             success (getFilenames files)
            
-                    
+let getConfig configFilename (parameters: Result<Params>) =
+    match parameters with
+    | Failure x -> failure x
+    | Success p -> 
+        let config = Helpers.load configFilename
+        match config with
+        | Failure c -> failure c
+        | Success c ->
+            success {p with Config = c} 
+
+let getOptions args (parameters: Result<Params>) =
+    match parameters with
+    | Failure x -> Failure x
+    | Success p ->
+        let                         
 [<EntryPoint>]
 let main argv =
+    let emptyParams = success {
+        Config = Config();
+        Opts = RawCp.CommandLine.emptyCommandLineOptions;
+        Filenames = Seq.empty<String>
+    }
+
+    let params = getConfig "rawcp-config.json" emptyParams
+        |> getOptions argv
+
     let config = Helpers.load "rawcp-config.json"
     let opts = RawCp.CommandLine.parseCommandLine argv config
     let filenames = findFiles config

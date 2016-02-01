@@ -11,6 +11,12 @@ module CommandLine =
         Move: bool
     }
 
+    let emptyCommandLineOptions = {
+        Description = "";
+        Camera = "";
+        Move = false;
+    }
+
     let parseCommandLine args (config: Result<Config>) =
         let rec parseCommandLineRec args options =
             match options with
