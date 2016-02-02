@@ -10,8 +10,10 @@ type FileGrp = {Date: DateTime; Files: seq<FileInfo>}
 type Params = {
     Config: Config; 
     Opts: CommandLineOptions;
+    Date: DateTime;
     Filenames: seq<String>;
 }
+
 
 let printLegend opts (conf: Config)  dest =
     let mthd = if opts.Move
@@ -51,15 +53,15 @@ let copyFiles files dest =
             
     Task.WhenAll(files |> Seq.map (copyFile dest)) 
 
-    
-let destinationFolder destFolder (date: DateTime) desc camera =
-    let subject = sprintf "%s %s" (date.ToString("yyyyMMdd")) desc 
+
+let destinationFolder p =
+    let subject = sprintf "%s %s" (p.Date.ToString("yyyyMMdd")) p.Opts.Description
     Path.Combine(
-        destFolder, 
-        date.ToString("yyyy"), 
-        date.ToString("MM MMMM"), 
-        subject.TrimEnd(), 
-        camera)
+        p.Config.DestinationFolder,
+        p.Date.ToString("yyyy"),
+        p.Date.ToString("MM MMMM"),
+        subject.TrimEnd(),
+        p.Config.Cameras.[p.Opts.Camera])
 
 
 let deleteSourceFiles move files =
@@ -67,10 +69,12 @@ let deleteSourceFiles move files =
         for f in files do
             File.Delete(f)
 
+
 let findFiles (config: Result<Config>) =
     let getFilenames files =
         let first = (files |> Seq.head)
-        first.Files |> Seq.map (fun fi -> fi.FullName)
+        let files = first.Files |> Seq.map (fun fi -> fi.FullName)
+        (first.Date, files)
 
     match config with
     | Failure s -> failure s
@@ -80,6 +84,7 @@ let findFiles (config: Result<Config>) =
             failure (sprintf "No files found in %s" c.SourceFolder)
         else
             success (getFilenames files)
+
            
 let getConfig configFilename (parameters: Result<Params>) =
     match parameters with
@@ -91,31 +96,50 @@ let getConfig configFilename (parameters: Result<Params>) =
         | Success c ->
             success {p with Config = c} 
 
+
 let getOptions args (parameters: Result<Params>) =
     match parameters with
-    | Failure x -> Failure x
+    | Failure x -> failure x
     | Success p ->
-        let                         
+        let opts = RawCp.CommandLine.parseCommandLine args (success p.Config)
+        match opts with
+        | Failure x -> failure x
+        | Success o -> success {p with Opts = o}
+
+        
+let getFilenames (parameters: Result<Params>) =
+    match parameters with
+    | Failure x -> failure x
+    | Success p -> 
+        let filenames = findFiles (success p.Config)
+        match filenames with
+        | Failure x -> failure x
+        | Success (d, f) -> success {p with Date = d; Filenames = f}
+
+                                       
 [<EntryPoint>]
 let main argv =
     let emptyParams = success {
         Config = Config();
         Opts = RawCp.CommandLine.emptyCommandLineOptions;
+        Date = DateTime.MinValue;
         Filenames = Seq.empty<String>
     }
 
-    let params = getConfig "rawcp-config.json" emptyParams
+    let parameters = 
+        getConfig "rawcp-config.json" emptyParams
         |> getOptions argv
+        |> getFilenames
 
-    let config = Helpers.load "rawcp-config.json"
-    let opts = RawCp.CommandLine.parseCommandLine argv config
-    let filenames = findFiles config
-    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras.[opts.Camera]
+    match parameters with
+    | Failure x -> -1
+    | Success p -> 
+        let destFolder = destinationFolder p 
 
-    printLegend opts config destFolder
+        printLegend p.Opts p.Config destFolder
 
-    let results = copyFiles filenames destFolder
-    results.Wait()
+        let results = copyFiles p.Filenames destFolder
+        results.Wait()
 
-    deleteSourceFiles opts.Move filenames
-    0 // return an integer exit code
+        deleteSourceFiles p.Opts.Move p.Filenames
+        0 // return an integer exit code
