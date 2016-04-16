@@ -86,60 +86,54 @@ let findFiles (config: Result<Config>) =
             success (getFilenames files)
 
            
-let getConfig configFilename (parameters: Result<Params>) =
-    match parameters with
-    | Failure x -> failure x
-    | Success p -> 
-        let config = Helpers.load configFilename
-        match config with
-        | Failure c -> failure c
-        | Success c ->
-            success {p with Config = c} 
+let getConfig configFilename p =
+    let config = Helpers.load configFilename
+    match config with
+    | Failure c -> failure c
+    | Success c ->
+        success {p with Config = c} 
 
 
-let getOptions args (parameters: Result<Params>) =
-    match parameters with
+let getOptions args p =
+    let opts = RawCp.CommandLine.parseCommandLine args (success p.Config)
+    match opts with
     | Failure x -> failure x
-    | Success p ->
-        let opts = RawCp.CommandLine.parseCommandLine args (success p.Config)
-        match opts with
-        | Failure x -> failure x
-        | Success o -> success {p with Opts = o}
+    | Success o -> success {p with Opts = o}
 
         
-let getFilenames (parameters: Result<Params>) =
-    match parameters with
+let getFilenames p =
+    let filenames = findFiles (success p.Config)
+    match filenames with
     | Failure x -> failure x
-    | Success p -> 
-        let filenames = findFiles (success p.Config)
-        match filenames with
-        | Failure x -> failure x
-        | Success (d, f) -> success {p with Date = d; Filenames = f}
+    | Success (d, f) -> success {p with Date = d; Filenames = f}
 
+let copy p =
+    let destFolder = destinationFolder p 
+
+    printLegend p.Opts p.Config destFolder
+
+    let results = copyFiles p.Filenames destFolder
+    results.Wait()
+
+    deleteSourceFiles p.Opts.Move p.Filenames
+    Success 0 // return an integer exit code    
                                        
 [<EntryPoint>]
 let main argv =
-    let emptyParams = success {
+    let emptyParams = {
         Config = Config();
         Opts = RawCp.CommandLine.emptyCommandLineOptions;
         Date = DateTime.MinValue;
         Filenames = Seq.empty<String>
     }
 
-    let parameters = 
-        getConfig "rawcp-config.json" emptyParams
-        |> getOptions argv
-        |> getFilenames
-
-    match parameters with
-    | Failure x -> -1
-    | Success p -> 
-        let destFolder = destinationFolder p 
-
-        printLegend p.Opts p.Config destFolder
-
-        let results = copyFiles p.Filenames destFolder
-        results.Wait()
-
-        deleteSourceFiles p.Opts.Move p.Filenames
-        0 // return an integer exit code
+    let x = getConfig "rawcp-config.json" emptyParams
+        >>= getOptions argv
+        >>= getFilenames
+        >>= copy
+    
+    match x with
+    | Success n -> n
+    | Failure m -> 
+        printfn "%s" m    
+        -1

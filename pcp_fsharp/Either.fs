@@ -15,5 +15,13 @@ let bind switchFunction twoTrackInput =
     | Success s -> switchFunction s
     | Failure f -> Failure f
 
+let (>>=) twoTrackInput switchFunction =
+    bind switchFunction twoTrackInput
+
 let map singleTrackFunction =
     bind (singleTrackFunction >> Success)
+
+let returnMessage result =
+    match result with
+    | Success obj -> obj.ToString
+    | Failure msg -> msg.ToString
