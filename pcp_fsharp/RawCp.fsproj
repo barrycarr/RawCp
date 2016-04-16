@@ -63,9 +63,9 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
-    <None Include="rawcp-config.json">
+    <Content Include="rawcp-config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
