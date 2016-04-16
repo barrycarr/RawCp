@@ -6,7 +6,7 @@ module CommandLineParser =
     open RawCp.Either
     open RawCp.CommandLineOptions
 
-    let parse args (config: Result<Config>) =
+    let parse args (config: Config) =
         let rec parseRec args options =
             match options with
             | Failure s -> failure s
@@ -22,17 +22,14 @@ module CommandLineParser =
                 | "/m"::xs ->
                     let newOpts = {optionsSoFar with Move = true }
                     parseRec xs.Tail (success newOpts)
-                | x::xs ->
-                    failure (sprintf "Option %s is unrecognised" x)
-
-        match config with
-        | Success c -> 
-            let defaultOpts = {
-                Description = "";
-                Camera = c.DefaultCamera;
-                Move = c.AlwaysMove
-            }
+                | x::_ -> failure (sprintf "Option %s is unrecognised" x)
         
-            parseRec (args |> Array.toList) (success defaultOpts)
+        let defaultOpts = {
+            Description = "";
+            Camera = config.DefaultCamera;
+            Move = config.AlwaysMove
+        }
         
-        | Failure s -> failure s     
+        parseRec (args |> Array.toList) (success defaultOpts)
+        
+        

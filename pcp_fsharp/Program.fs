@@ -23,7 +23,7 @@ let getConfig configFilename p =
 
 
 let getOptions args p =
-    let opts = RawCp.CommandLineParser.parse args (success p.Config)
+    let opts = RawCp.CommandLineParser.parse args p.Config
     match opts with
     | Failure x -> failure x
     | Success o -> success {p with Opts = o}
