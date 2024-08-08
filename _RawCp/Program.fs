@@ -1,6 +1,6 @@
 ﻿open RawCp.Config
 open RawCp.CommandLine
-open SDCard.SdCardNumber
+open SDCard
 open System
 open System.IO
 open System.Threading.Tasks
@@ -12,9 +12,9 @@ let printLegend opts (conf: Config)  dest =
                   then "MOVING" 
                   else "COPYING"
     printfn "RawCp: v0.1"
-    printfn "  %s files" mthd
-    printfn "  from: %s" conf.SourceFolder
-    printfn "  to:   %s" dest;
+    printfn $"  %s{mthd} files"
+    printfn $"  from: %s{conf.SourceFolder}"
+    printfn $"  to:   %s{dest}";
 
 
 let fileGroups dir =
@@ -29,7 +29,7 @@ let copyFiles files dest =
     let asyncAwaitVoidTask (t: Task) =
         Async.AwaitIAsyncResult(t) |> Async.Ignore
 
-    let copyFile dest f =
+    let copyFile dest (f: string) =
         // http://www.codeproject.com/Articles/773451/Fsharp-Asynchronous-Workflows
         let di = Directory.CreateDirectory(dest)
         async {
@@ -37,7 +37,7 @@ let copyFiles files dest =
             use reader = File.Open(f, FileMode.Open)
             use writer = File.Create(d)
             
-            printfn "  %s -> %s" f d
+            printfn $"  %s{f} -> %s{d}"
             
             do! reader.CopyToAsync(writer) |> asyncAwaitVoidTask
             do! writer.FlushAsync() |> asyncAwaitVoidTask
@@ -65,11 +65,11 @@ let deleteSourceFiles move files =
 [<EntryPoint>]
 let main argv =
     let config = Helpers.load "rawcp-config.json"
-    let opts = RawCp.CommandLine.parseCommandLine argv config
+    let opts = parseCommandLine argv config
     let files = fileGroups config.SourceFolder
     let first = (files |> Seq.head)
     let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
-    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras.[opts.Camera]
+    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras[opts.Camera]
 
     printLegend opts config destFolder
 

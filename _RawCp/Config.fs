@@ -1,6 +1,8 @@
 ﻿namespace RawCp.Config
 
+
 open System.Collections.Generic
+
 
 type Config() =
     member val AlwaysMove = false with get, set
@@ -12,8 +14,8 @@ type Config() =
 module Helpers =
     open System.Reflection
     open System.IO
+    open System.Text.Json
     open System
-    open Newtonsoft.Json
 
     let load fn =
         let locations = [
@@ -31,5 +33,5 @@ module Helpers =
                 else loadRec (locs |> List.tail) fn
 
         match loadRec locations fn with
-        | Some(fn) -> JsonConvert.DeserializeObject<Config>(File.ReadAllText(fn))
+        | Some(fn) -> JsonDocument.Parse(File.ReadAllText(fn))
         | None -> failwith "Config file not found! Searched the current directory; RawCp's directory and your home directory!"
