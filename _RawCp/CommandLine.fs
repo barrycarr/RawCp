@@ -24,13 +24,13 @@ module CommandLine =
                 let newOpts = {optionsSoFar with Move = true }
                 parseCommandLineRec xs.Tail newOpts
             | x::xs ->
-                printfn "Option %s is unrecognised" x
+                printfn $"Option %s{x} is unrecognised"
                 parseCommandLineRec xs optionsSoFar
 
         let defaultOpts = {
             Description = "";
-            Camera = config.DefaultCamera;
-            Move = config.AlwaysMove
+            Camera =  "" //config.DefaultCamera;
+            Move =  false // config.AlwaysMove
         }
         
         parseCommandLineRec (args |> Array.toList) defaultOpts 

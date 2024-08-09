@@ -4,6 +4,7 @@ open SDCard
 open System
 open System.IO
 open System.Threading.Tasks
+open Test
 
 type FileGrp = {Date: DateTime; Files: seq<FileInfo>}
 
@@ -64,17 +65,19 @@ let deleteSourceFiles move files =
     
 [<EntryPoint>]
 let main argv =
+    simpleTest
+    
     let config = Helpers.load "rawcp-config.json"
     let opts = parseCommandLine argv config
     let files = fileGroups config.SourceFolder
     let first = (files |> Seq.head)
     let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
     let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras[opts.Camera]
-
+    
     printLegend opts config destFolder
-
+    
     let results = copyFiles filenames destFolder
     results.Wait()
-
+    
     deleteSourceFiles opts.Move filenames
     0 // return an integer exit code

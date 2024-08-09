@@ -1,11 +1,23 @@
 {
     "alwaysMove": true,
-    "cameras": {
-        "a7": "Sony A7",
-        "nex5": "Sony NEX-5N",
-        "nex6": "Sony NEX-6",
-        "x100s": "Fuji x100s"
-    },
+    "cameras": [
+        {
+            "id": "a7", 
+            "value": "Sony A7"
+        },
+        {
+            "id": "nex5", 
+            "value": "Sony NEX-5N"
+        },
+        {
+            "id": "nex6", 
+            "value": "Sony NEX-6"
+        },
+        {
+            "id": "x100s", 
+            "value": "Fuji x100s"
+        }
+    ],
     "defaultCamera": "x100s",
     "destinationFolder": "c:\\test\\dest",
     "sourceFolder": "c:\\test\\src"
