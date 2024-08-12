@@ -8,7 +8,7 @@ open Test
 
 type FileGrp = {Date: DateTime; Files: seq<FileInfo>}
 
-let printLegend opts (conf: Config)  dest =
+let printLegend opts (conf: Config.Root)  dest =
     let mthd = if opts.Move
                   then "MOVING" 
                   else "COPYING"
@@ -47,14 +47,14 @@ let copyFiles files dest =
     Task.WhenAll(files |> Seq.map (copyFile dest)) 
 
     
-let destinationFolder destFolder (date: DateTime) desc camera =
+let destinationFolder destFolder (date: DateTime) desc (camera: string option) =
     let subject = sprintf "%s %s" (date.ToString("yyyyMMdd")) desc 
     Path.Combine(
         destFolder, 
         date.ToString("yyyy"), 
         date.ToString("MM MMMM"), 
         subject, 
-        camera)
+        camera.Value)
 
 
 let deleteSourceFiles move files =
@@ -72,7 +72,7 @@ let main argv =
     let files = fileGroups config.SourceFolder
     let first = (files |> Seq.head)
     let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
-    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description config.Cameras[opts.Camera]
+    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description (Helpers.findCamera config opts.Camera)
     
     printLegend opts config destFolder
     

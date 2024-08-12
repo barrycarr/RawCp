@@ -10,7 +10,7 @@ module CommandLine =
         Move: bool
     }
 
-    let parseCommandLine args (config: Config) =
+    let parseCommandLine args (config: Config.Root) =
         let rec parseCommandLineRec args optionsSoFar =
             match args with
             | [] -> optionsSoFar
@@ -29,8 +29,8 @@ module CommandLine =
 
         let defaultOpts = {
             Description = "";
-            Camera =  "" //config.DefaultCamera;
-            Move =  false // config.AlwaysMove
+            Camera =  config.DefaultCamera;
+            Move =  config.AlwaysMove
         }
         
         parseCommandLineRec (args |> Array.toList) defaultOpts 

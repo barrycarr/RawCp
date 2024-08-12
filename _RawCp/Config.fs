@@ -6,13 +6,6 @@ open FSharp.Data
 
 type Config = JsonProvider<"J:\\OneDrive\\Dev\\RawCp\\_RawCp\\rawcp-config.json">
 
-// type Config() =
-//     member val AlwaysMove = false with get, set
-//     member val SourceFolder = "" with get, set
-//     member val DestinationFolder = "" with get, set
-//     member val Cameras = new Dictionary<string,string>() with get, set
-//     member val DefaultCamera = "" with get, set
-
 module Test =
     let simpleTest =
         let config = Config.Parse(File.ReadAllText "J:\\OneDrive\\Dev\\RawCp\\_RawCp\\rawcp-config.json")
@@ -44,3 +37,6 @@ module Helpers =
         match loadRec locations fileName with
         | Some(f) -> Config.Parse(File.ReadAllText f)
         | None -> failwith "Config file not found! Searched the current directory; RawCp's directory and your home directory!"
+        
+    let findCamera (config: Config.Root) cameraId =
+        config.Cameras |> Seq.tryFind (fun (camera) -> camera.Id = cameraId) |> Option.map (_.Value)
