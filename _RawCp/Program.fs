@@ -21,8 +21,8 @@ let printLegend opts (conf: Config.Root)  dest =
 let fileGroups dir =
     let dirInfo = DirectoryInfo(dir)
     dirInfo.GetFiles("*.*") 
-        |> Array.sortBy (fun fi -> fi.LastWriteTime.Date)
-        |> Seq.groupBy (fun fi -> fi.LastWriteTime.Date)
+        |> Array.sortBy (_.LastWriteTime.Date)
+        |> Seq.groupBy (_.LastWriteTime.Date)
         |> Seq.map(fun (dt, infos) -> {Date = dt.Date; Files = infos})
 
 
@@ -67,17 +67,23 @@ let deleteSourceFiles move files =
 let main argv =
     simpleTest
     
-    let config = Helpers.load "rawcp-config.json"
+    let config = Helpers.loadConfig "rawcp-config.json"
     let opts = parseCommandLine argv config
-    let files = fileGroups config.SourceFolder
-    let first = (files |> Seq.head)
-    let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
-    let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description (Helpers.findCamera config opts.Camera)
     
-    printLegend opts config destFolder
-    
-    let results = copyFiles filenames destFolder
-    results.Wait()
-    
-    deleteSourceFiles opts.Move filenames
-    0 // return an integer exit code
+    match Helpers.validatePaths config with
+    | Error e -> 
+        printfn $"Error: %s{e}"
+        -1 // return an integer exit code
+    | Ok _ ->
+        let files = fileGroups config.SourceFolder
+        let first = (files |> Seq.head)
+        let filenames = first.Files |> Seq.map (fun fi -> fi.FullName)
+        let destFolder = destinationFolder config.DestinationFolder first.Date opts.Description (Helpers.findCamera config opts.Camera)
+        
+        printLegend opts config destFolder
+        
+        let results = copyFiles filenames destFolder
+        results.Wait()
+        
+        deleteSourceFiles opts.Move filenames
+        0 // return an integer exit code

@@ -15,10 +15,9 @@ module Test =
     
 module Helpers =
     open System.Reflection
-    open System.IO
     open System
     
-    let load fileName =
+    let loadConfig fileName =
         let locations = [
             "J:\\OneDrive\\Dev\\RawCp\\_RawCp\\";
             Directory.GetCurrentDirectory();
@@ -40,3 +39,12 @@ module Helpers =
         
     let findCamera (config: Config.Root) cameraId =
         config.Cameras |> Seq.tryFind (fun (camera) -> camera.Id = cameraId) |> Option.map (_.Value)
+        
+    
+    let validatePaths (config: Config.Root) =
+        if not <| Directory.Exists(config.SourceFolder) then
+            Error "Source folder does not exist!"
+        elif not <| Directory.Exists(config.DestinationFolder) then
+            Error "Destination folder does not exist!"
+        else
+            Ok config    
